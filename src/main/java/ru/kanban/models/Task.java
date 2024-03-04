@@ -1,6 +1,6 @@
 package ru.kanban.models;
 
-public abstract class Task {
+public class Task {
     protected String title;
     protected String description;
     protected long id;
@@ -11,6 +11,10 @@ public abstract class Task {
         this.description = description;
         this.id = id;
         this.progress = progress;
+    }
+
+    public void updateStatus(Status status) {
+        this.progress = status;
     }
 
     public Status getProgress() {

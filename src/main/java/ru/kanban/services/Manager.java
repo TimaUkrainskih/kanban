@@ -2,7 +2,6 @@ package ru.kanban.services;
 
 import ru.kanban.models.Epic;
 import ru.kanban.models.Subtask;
-import ru.kanban.models.NormalTask;
 import ru.kanban.models.Task;
 
 import java.util.ArrayList;
@@ -11,35 +10,40 @@ import java.util.List;
 import java.util.Map;
 
 public class Manager {
-    private static Map<Long, NormalTask> normalTaskList = new HashMap<>();
+    private static Map<Long, Task> taskList = new HashMap<>();
     private static Map<Long, Subtask> subtaskList = new HashMap<>();
     private static Map<Long, Epic> epicList = new HashMap<>();
     private static Long ID = 0L;
 
-    public void create(Task task) {
-        if (task instanceof NormalTask) {
+    public void createTask(Task task) {
+        if (task.getClass() != Task.class) {
             task.setId(++ID);
-            normalTaskList.put(ID, (NormalTask) task);
-        } else if (task instanceof Subtask) {
-            task.setId(++ID);
-            subtaskList.put(ID, (Subtask) task);
-        } else {
-            task.setId(++ID);
-            epicList.put(ID, (Epic) task);
+            taskList.put(ID, task);
         }
     }
 
+    public void createSubtask(Subtask subtask) {
+        subtask.setId(++ID);
+        subtaskList.put(ID, subtask);
+    }
+
+    public void createEpic(Epic epic) {
+        epic.setId(++ID);
+        epicList.put(ID, epic);
+    }
+
+
     public List<Task> listOfAllTasks() {
         List<Task> result = new ArrayList<>();
-        result.addAll(normalTaskList.values().stream().toList());
+        result.addAll(taskList.values().stream().toList());
         result.addAll(subtaskList.values().stream().toList());
         result.addAll(epicList.values().stream().toList());
         return result;
     }
 
     public Task findById(Long id) {
-        if (normalTaskList.containsKey(id)) {
-            return normalTaskList.get(id);
+        if (taskList.containsKey(id)) {
+            return taskList.get(id);
         } else if (subtaskList.containsKey(id)) {
             subtaskList.get(id);
         } else if (epicList.containsKey(id)) {
@@ -49,24 +53,29 @@ public class Manager {
     }
 
     public void deleteAllTasks() {
-        normalTaskList.clear();
+        taskList.clear();
         subtaskList.clear();
         epicList.clear();
     }
 
     public void updateTask(Task updatedTask) {
-        if (updatedTask instanceof Epic) {
-            epicList.put(updatedTask.getId(), (Epic) updatedTask);
-        } else if (updatedTask instanceof Subtask) {
-            subtaskList.put(updatedTask.getId(), (Subtask) updatedTask);
-        } else {
-            normalTaskList.put(updatedTask.getId(), (NormalTask) updatedTask);
+        if (updatedTask.getClass() != Task.class) {
+            taskList.put(updatedTask.getId(), updatedTask);
         }
     }
 
+    public void updateSubtask(Subtask updateSubtask) {
+        subtaskList.put(updateSubtask.getId(), updateSubtask);
+    }
+
+    public void updateEpic(Epic updatedEpic) {
+        epicList.put(updatedEpic.getId(), updatedEpic);
+    }
+
+
     public boolean deleteTask(Long id) {
-        if (normalTaskList.containsKey(id)) {
-            normalTaskList.remove(id);
+        if (taskList.containsKey(id)) {
+            taskList.remove(id);
             return true;
         } else if (subtaskList.containsKey(id)) {
             subtaskList.remove(id);
