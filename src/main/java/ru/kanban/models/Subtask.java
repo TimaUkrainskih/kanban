@@ -7,6 +7,7 @@ public class Subtask extends Task {
         super(title, description, id, progress);
         this.epic = epic;
     }
+
     public void updateStatus(Status status) {
         this.progress = status;
     }

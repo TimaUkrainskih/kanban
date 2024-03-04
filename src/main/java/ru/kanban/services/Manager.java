@@ -77,6 +77,7 @@ public class Manager {
         }
         return false;
     }
+
     public List<Subtask> getSubtasksForEpic(Epic epic) {
         List<Subtask> epicSubtasks = new ArrayList<>();
         for (Task task : epic.getSubtaskList()) {

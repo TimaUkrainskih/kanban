@@ -24,6 +24,4 @@ public abstract class Task {
     public long getId() {
         return id;
     }
-
-
 }
