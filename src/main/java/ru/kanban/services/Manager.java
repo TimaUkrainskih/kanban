@@ -32,7 +32,6 @@ public class Manager {
         epicList.put(ID, epic);
     }
 
-
     public List<Task> listOfAllTasks() {
         List<Task> result = new ArrayList<>();
         result.addAll(taskList.values().stream().toList());
@@ -71,7 +70,6 @@ public class Manager {
     public void updateEpic(Epic updatedEpic) {
         epicList.put(updatedEpic.getId(), updatedEpic);
     }
-
 
     public boolean deleteTask(Long id) {
         if (taskList.containsKey(id)) {
