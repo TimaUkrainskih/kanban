@@ -4,10 +4,7 @@ import ru.kanban.models.Epic;
 import ru.kanban.models.Subtask;
 import ru.kanban.models.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Manager {
     private static Map<Long, Task> taskList = new HashMap<>();
@@ -16,10 +13,8 @@ public class Manager {
     private static Long ID = 1L;
 
     public void createTask(Task task) {
-        if (task.getClass() != Task.class) {
-            task.setId(ID);
-            taskList.put(ID++, task);
-        }
+        task.setId(ID);
+        taskList.put(ID++, task);
     }
 
     public void createSubtask(Subtask subtask) {
@@ -40,15 +35,15 @@ public class Manager {
         return result;
     }
 
-    public Task findById(Long id) {
+    public Optional<Task> findById(Long id) {
         if (taskList.containsKey(id)) {
-            return taskList.get(id);
+            return Optional.ofNullable(taskList.get(id));
         } else if (subtaskList.containsKey(id)) {
-            subtaskList.get(id);
+            return Optional.ofNullable(subtaskList.get(id));
         } else if (epicList.containsKey(id)) {
-            epicList.get(id);
+            return Optional.ofNullable(epicList.get(id));
         }
-        return null;
+        return Optional.empty();
     }
 
     public void deleteAllTasks() {
@@ -58,9 +53,7 @@ public class Manager {
     }
 
     public void updateTask(Task updatedTask) {
-        if (updatedTask.getClass() != Task.class) {
-            taskList.put(updatedTask.getId(), updatedTask);
-        }
+        taskList.put(updatedTask.getId(), updatedTask);
     }
 
     public void updateSubtask(Subtask updateSubtask) {
@@ -86,13 +79,7 @@ public class Manager {
     }
 
     public List<Subtask> getSubtasksForEpic(Epic epic) {
-        List<Subtask> epicSubtasks = new ArrayList<>();
-        for (Task task : epic.getSubtaskList()) {
-            if (task instanceof Subtask) {
-                epicSubtasks.add((Subtask) task);
-            }
-        }
-        return epicSubtasks;
+        return new ArrayList<>(epic.getSubtaskList());
     }
 
     public void increaseId() {
