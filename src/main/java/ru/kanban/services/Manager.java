@@ -26,6 +26,7 @@ public class Manager {
 
     public Optional<Epic> createEpic(Epic epic) {
         epic.setId(ID);
+        epic.updateStatus();
         epicList.put(ID++, epic);
         return Optional.of(epic);
     }
@@ -66,6 +67,7 @@ public class Manager {
     }
 
     public Optional<Epic> updateEpic(Epic updatedEpic) {
+        updatedEpic.updateStatus();
         epicList.put(updatedEpic.getId(), updatedEpic);
         return Optional.of(updatedEpic);
     }
