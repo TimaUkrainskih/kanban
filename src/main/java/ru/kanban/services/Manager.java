@@ -13,23 +13,23 @@ public class Manager {
     private static Map<Long, Task> taskList = new HashMap<>();
     private static Map<Long, Subtask> subtaskList = new HashMap<>();
     private static Map<Long, Epic> epicList = new HashMap<>();
-    private static Long ID = 0L;
+    private static Long ID = 1L;
 
     public void createTask(Task task) {
         if (task.getClass() != Task.class) {
-            task.setId(++ID);
-            taskList.put(ID, task);
+            task.setId(ID);
+            taskList.put(ID++, task);
         }
     }
 
     public void createSubtask(Subtask subtask) {
-        subtask.setId(++ID);
-        subtaskList.put(ID, subtask);
+        subtask.setId(ID);
+        subtaskList.put(ID++, subtask);
     }
 
     public void createEpic(Epic epic) {
-        epic.setId(++ID);
-        epicList.put(ID, epic);
+        epic.setId(ID);
+        epicList.put(ID++, epic);
     }
 
     public List<Task> listOfAllTasks() {
@@ -93,5 +93,9 @@ public class Manager {
             }
         }
         return epicSubtasks;
+    }
+
+    public void increaseId() {
+        ID++;
     }
 }
