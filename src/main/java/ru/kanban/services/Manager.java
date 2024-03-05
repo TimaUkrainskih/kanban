@@ -12,19 +12,22 @@ public class Manager {
     private static Map<Long, Epic> epicList = new HashMap<>();
     private static Long ID = 1L;
 
-    public void createTask(Task task) {
+    public Optional<Task> createTask(Task task) {
         task.setId(ID);
         taskList.put(ID++, task);
+        return Optional.of(task);
     }
 
-    public void createSubtask(Subtask subtask) {
+    public Optional<Subtask> createSubtask(Subtask subtask) {
         subtask.setId(ID);
         subtaskList.put(ID++, subtask);
+        return Optional.of(subtask);
     }
 
-    public void createEpic(Epic epic) {
+    public Optional<Epic> createEpic(Epic epic) {
         epic.setId(ID);
         epicList.put(ID++, epic);
+        return Optional.of(epic);
     }
 
     public List<Task> listOfAllTasks() {
@@ -52,16 +55,19 @@ public class Manager {
         epicList.clear();
     }
 
-    public void updateTask(Task updatedTask) {
+    public Optional<Task> updateTask(Task updatedTask) {
         taskList.put(updatedTask.getId(), updatedTask);
+        return Optional.of(updatedTask);
     }
 
-    public void updateSubtask(Subtask updateSubtask) {
+    public Optional<Subtask> updateSubtask(Subtask updateSubtask) {
         subtaskList.put(updateSubtask.getId(), updateSubtask);
+        return Optional.of(updateSubtask);
     }
 
-    public void updateEpic(Epic updatedEpic) {
+    public Optional<Epic> updateEpic(Epic updatedEpic) {
         epicList.put(updatedEpic.getId(), updatedEpic);
+        return Optional.of(updatedEpic);
     }
 
     public boolean deleteTask(Long id) {
