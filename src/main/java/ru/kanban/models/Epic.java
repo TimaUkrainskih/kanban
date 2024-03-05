@@ -1,6 +1,8 @@
 package ru.kanban.models;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class Epic extends Task {
     private List<Subtask> subtaskList;
@@ -24,5 +26,34 @@ public class Epic extends Task {
 
     public List<Subtask> getSubtaskList() {
         return subtaskList;
+    }
+
+    public void setSubtaskList(List<Subtask> subtaskList) {
+        this.subtaskList = subtaskList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(subtaskList, epic.subtaskList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), subtaskList);
+    }
+
+    @Override
+    public String toString() {
+        return "Epic{" +
+                "subtaskList=" +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id +
+                ", progress=" + progress +
+                '}';
     }
 }
