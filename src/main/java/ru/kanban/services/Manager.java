@@ -12,6 +12,12 @@ public class Manager {
     private static Map<Long, Epic> epicList = new HashMap<>();
     private static Long ID = 1L;
 
+    private void updateStatusEpic() {
+        for(Map.Entry<Long, Epic> map : epicList.entrySet()) {
+            map.getValue().updateStatus();
+        }
+    }
+
     public Optional<Task> createTask(Task task) {
         task.setId(ID);
         taskList.put(ID++, task);
@@ -21,6 +27,7 @@ public class Manager {
     public Optional<Subtask> createSubtask(Subtask subtask) {
         subtask.setId(ID);
         subtaskList.put(ID++, subtask);
+        updateStatusEpic();
         return Optional.of(subtask);
     }
 
@@ -45,6 +52,7 @@ public class Manager {
         } else if (subtaskList.containsKey(id)) {
             return Optional.ofNullable(subtaskList.get(id));
         } else if (epicList.containsKey(id)) {
+            epicList.get(id).updateStatus();
             return Optional.ofNullable(epicList.get(id));
         }
         return Optional.empty();
@@ -63,6 +71,7 @@ public class Manager {
 
     public Optional<Subtask> updateSubtask(Subtask updateSubtask) {
         subtaskList.put(updateSubtask.getId(), updateSubtask);
+        updateStatusEpic();
         return Optional.of(updateSubtask);
     }
 
@@ -78,9 +87,10 @@ public class Manager {
             return true;
         } else if (subtaskList.containsKey(id)) {
             subtaskList.remove(id);
+            updateStatusEpic();
             return true;
         } else if (epicList.containsKey(id)) {
-            subtaskList.remove(id);
+            epicList.remove(id);
             return true;
         }
         return false;
