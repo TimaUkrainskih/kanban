@@ -13,7 +13,7 @@ public class Manager {
     private static Long ID = 1L;
 
     private void updateStatusEpic() {
-        for(Map.Entry<Long, Epic> map : epicList.entrySet()) {
+        for (Map.Entry<Long, Epic> map : epicList.entrySet()) {
             map.getValue().updateStatus();
         }
     }
