@@ -13,11 +13,7 @@ public class Manager {
     private static Long ID = 1L;
 
     private void updateStatusEpic(Subtask subtask) {
-        for (Map.Entry<Long, Epic> map : epicList.entrySet()) {
-            if (map.getValue().getSubtaskList().contains(subtask)) {
-                map.getValue().updateStatus();
-            }
-        }
+        subtaskList.get(subtask.getId()).getEpic().updateStatus();
     }
 
     public Optional<Task> createTask(Task task) {
