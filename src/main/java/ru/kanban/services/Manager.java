@@ -15,12 +15,20 @@ public class Manager {
     private static Long ID = 1L;
 
     private void updateStatus(Epic epic) {
-        long doneCount = epic.getListSubtaskId().stream()
-                .filter(taskId -> subtaskList.get(taskId).getProgress() == Status.DONE)
-                .count();
-        if (epic.getListSubtaskId().isEmpty() || doneCount == 0) {
+        boolean allNew = true;
+        boolean allDone = true;
+        for (Long taskId : epic.getListSubtaskId()) {
+            Status subtaskStatus = subtaskList.get(taskId).getProgress();
+            if (subtaskStatus != Status.NEW) {
+                allNew = false;
+            }
+            if (subtaskStatus != Status.DONE) {
+                allDone = false;
+            }
+        }
+        if (epic.getListSubtaskId().isEmpty() || allNew) {
             epic.setProgress(Status.NEW);
-        } else if (doneCount == epic.getListSubtaskId().size()) {
+        } else if (allDone) {
             epic.setProgress(Status.DONE);
         } else {
             epic.setProgress(Status.IN_PROGRESS);
