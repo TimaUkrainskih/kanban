@@ -1,10 +1,12 @@
 package ru.kanban.services;
 
 import ru.kanban.models.Epic;
+import ru.kanban.models.Status;
 import ru.kanban.models.Subtask;
 import ru.kanban.models.Task;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Manager {
     private static Map<Long, Task> taskList = new HashMap<>();
@@ -12,8 +14,19 @@ public class Manager {
     private static Map<Long, Epic> epicList = new HashMap<>();
     private static Long ID = 1L;
 
-    private void updateStatusEpic(Subtask subtask) {
-        subtaskList.get(subtask.getId()).getEpic().updateStatus();
+    private void updateStatus(Epic epic) {
+        if (epic.getListSubtaskId().isEmpty()) {
+            epic.setProgress(Status.NEW);
+            return;
+        }
+        long doneCount = epic.getListSubtaskId().stream()
+                .filter(taskId -> subtaskList.get(taskId).getProgress() == Status.DONE)
+                .count();
+        if (doneCount == epic.getListSubtaskId().size()) {
+            epic.setProgress(Status.DONE);
+        } else {
+            epic.setProgress(Status.IN_PROGRESS);
+        }
     }
 
     public Optional<Task> createTask(Task task) {
@@ -23,15 +36,18 @@ public class Manager {
     }
 
     public Optional<Subtask> createSubtask(Subtask subtask) {
-        subtask.setId(ID);
-        subtaskList.put(ID++, subtask);
-        updateStatusEpic(subtask);
-        return Optional.of(subtask);
+        if (epicList.containsKey(subtask.getEpicId())) {
+            subtask.setId(ID);
+            subtaskList.put(ID++, subtask);
+            updateStatus(epicList.get(subtask.getEpicId()));
+            return Optional.of(subtask);
+        }
+        return Optional.empty();
     }
 
     public Optional<Epic> createEpic(Epic epic) {
         epic.setId(ID);
-        epic.updateStatus();
+        updateStatus(epic);
         epicList.put(ID++, epic);
         return Optional.of(epic);
     }
@@ -50,7 +66,6 @@ public class Manager {
         } else if (subtaskList.containsKey(id)) {
             return Optional.ofNullable(subtaskList.get(id));
         } else if (epicList.containsKey(id)) {
-            epicList.get(id).updateStatus();
             return Optional.ofNullable(epicList.get(id));
         }
         return Optional.empty();
@@ -69,12 +84,12 @@ public class Manager {
 
     public Optional<Subtask> updateSubtask(Subtask updateSubtask) {
         subtaskList.put(updateSubtask.getId(), updateSubtask);
-        updateStatusEpic(updateSubtask);
+        updateStatus(epicList.get(updateSubtask.getEpicId()));
         return Optional.of(updateSubtask);
     }
 
     public Optional<Epic> updateEpic(Epic updatedEpic) {
-        updatedEpic.updateStatus();
+        updateStatus(updatedEpic);
         epicList.put(updatedEpic.getId(), updatedEpic);
         return Optional.of(updatedEpic);
     }
@@ -85,7 +100,7 @@ public class Manager {
             return true;
         } else if (subtaskList.containsKey(id)) {
             Subtask deletedSubtask = subtaskList.remove(id);
-            updateStatusEpic(deletedSubtask);
+            updateStatus(epicList.get(deletedSubtask.getEpicId()));
             return true;
         } else if (epicList.containsKey(id)) {
             epicList.remove(id);
@@ -95,7 +110,10 @@ public class Manager {
     }
 
     public List<Subtask> getSubtasksForEpic(Epic epic) {
-        return new ArrayList<>(epic.getSubtaskList());
+        return epic.getListSubtaskId().stream()
+                .filter(subtaskList::containsKey)
+                .map(subtaskList::get)
+                .collect(Collectors.toList());
     }
 
     public void increaseId() {

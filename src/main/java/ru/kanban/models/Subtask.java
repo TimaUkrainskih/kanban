@@ -3,23 +3,23 @@ package ru.kanban.models;
 import java.util.Objects;
 
 public class Subtask extends Task {
-    private Epic epic;
+    private Long epicId;
 
-    public Subtask(String title, String description, long id, Status progress, Epic epic) {
+    public Subtask(String title, String description, long id, Status progress, Long epicId) {
         super(title, description, id, progress);
-        this.epic = epic;
+        this.epicId = epicId;
     }
 
     public void updateStatus(Status status) {
         this.progress = status;
     }
 
-    public Epic getEpic() {
-        return epic;
+    public Long getEpicId() {
+        return epicId;
     }
 
-    public void setEpic(Epic epic) {
-        this.epic = epic;
+    public void setEpicId(Long epicId) {
+        this.epicId = epicId;
     }
 
     @Override
@@ -28,18 +28,18 @@ public class Subtask extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Subtask subtask = (Subtask) o;
-        return Objects.equals(epic, subtask.epic);
+        return Objects.equals(epicId, subtask.epicId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), epic);
+        return Objects.hash(super.hashCode(), epicId);
     }
 
     @Override
     public String toString() {
         return "Subtask{" +
-                "epic=" + epic +
+                "epicId=" + epicId +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
