@@ -116,6 +116,8 @@ public class Manager {
             return true;
         } else if (subtaskList.containsKey(id)) {
             Subtask deletedSubtask = subtaskList.remove(id);
+            epicList.get(deletedSubtask.getEpicId()).getListSubtaskId()
+                    .removeIf(x -> x.equals(deletedSubtask.getId()));
             updateStatus(epicList.get(deletedSubtask.getEpicId()));
             return true;
         } else if (epicList.containsKey(id)) {
