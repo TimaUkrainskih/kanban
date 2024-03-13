@@ -45,6 +45,7 @@ public class Manager {
         if (epicList.containsKey(subtask.getEpicId())) {
             subtask.setId(ID);
             subtaskList.put(ID++, subtask);
+            epicList.get(subtask.getEpicId()).getListSubtaskId().add(subtask.getId());
             updateStatus(epicList.get(subtask.getEpicId()));
             return Optional.of(subtask);
         }
@@ -84,20 +85,29 @@ public class Manager {
     }
 
     public Optional<Task> updateTask(Task updatedTask) {
-        taskList.put(updatedTask.getId(), updatedTask);
-        return Optional.of(updatedTask);
+        if (taskList.containsKey(updatedTask.getId())) {
+            taskList.put(updatedTask.getId(), updatedTask);
+            return Optional.of(updatedTask);
+        }
+        return Optional.empty();
     }
 
     public Optional<Subtask> updateSubtask(Subtask updateSubtask) {
-        subtaskList.put(updateSubtask.getId(), updateSubtask);
-        updateStatus(epicList.get(updateSubtask.getEpicId()));
-        return Optional.of(updateSubtask);
+        if (subtaskList.containsKey(updateSubtask.getId())) {
+            subtaskList.put(updateSubtask.getId(), updateSubtask);
+            updateStatus(epicList.get(updateSubtask.getEpicId()));
+            return Optional.of(updateSubtask);
+        }
+        return Optional.empty();
     }
 
     public Optional<Epic> updateEpic(Epic updatedEpic) {
-        updateStatus(updatedEpic);
-        epicList.put(updatedEpic.getId(), updatedEpic);
-        return Optional.of(updatedEpic);
+        if (epicList.containsKey(updatedEpic.getId())) {
+            updateStatus(updatedEpic);
+            epicList.put(updatedEpic.getId(), updatedEpic);
+            return Optional.of(updatedEpic);
+        }
+        return Optional.empty();
     }
 
     public boolean deleteTask(Long id) {
