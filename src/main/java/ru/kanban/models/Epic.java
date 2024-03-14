@@ -6,9 +6,8 @@ import java.util.Objects;
 public class Epic extends Task {
     private List<Long> listSubtaskId;
 
-    public Epic(String title, String description, long id, Status progress, List<Long> listSubtaskId) {
+    public Epic(String title, String description, long id, Status progress) {
         super(title, description, id, progress);
-        this.listSubtaskId = listSubtaskId;
     }
 
     public void deleteSubtaskId(Long id) {
@@ -21,10 +20,6 @@ public class Epic extends Task {
 
     public List<Long> getListSubtaskId() {
         return listSubtaskId;
-    }
-
-    public void setListSubtaskId(List<Long> listSubtaskId) {
-        this.listSubtaskId = listSubtaskId;
     }
 
     @Override

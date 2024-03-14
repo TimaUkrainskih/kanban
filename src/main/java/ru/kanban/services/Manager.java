@@ -14,27 +14,6 @@ public class Manager {
     private static Map<Long, Epic> epicList = new HashMap<>();
     private static Long ID = 1L;
 
-    private void updateStatus(Epic epic) {
-        boolean allNew = true;
-        boolean allDone = true;
-        for (Long taskId : epic.getListSubtaskId()) {
-            Status subtaskStatus = subtaskList.get(taskId).getProgress();
-            if (subtaskStatus != Status.NEW) {
-                allNew = false;
-            }
-            if (subtaskStatus != Status.DONE) {
-                allDone = false;
-            }
-        }
-        if (epic.getListSubtaskId().isEmpty() || allNew) {
-            epic.setProgress(Status.NEW);
-        } else if (allDone) {
-            epic.setProgress(Status.DONE);
-        } else {
-            epic.setProgress(Status.IN_PROGRESS);
-        }
-    }
-
     public Optional<Task> createTask(Task task) {
         task.setId(ID);
         taskList.put(ID++, task);
@@ -133,7 +112,24 @@ public class Manager {
                 .collect(Collectors.toList());
     }
 
-    public void increaseId() {
-        ID++;
+    private void updateStatus(Epic epic) {
+        boolean allNew = true;
+        boolean allDone = true;
+        for (Long taskId : epic.getListSubtaskId()) {
+            Status subtaskStatus = subtaskList.get(taskId).getProgress();
+            if (subtaskStatus != Status.NEW) {
+                allNew = false;
+            }
+            if (subtaskStatus != Status.DONE) {
+                allDone = false;
+            }
+        }
+        if (epic.getListSubtaskId().isEmpty() || allNew) {
+            epic.setProgress(Status.NEW);
+        } else if (allDone) {
+            epic.setProgress(Status.DONE);
+        } else {
+            epic.setProgress(Status.IN_PROGRESS);
+        }
     }
 }
