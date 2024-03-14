@@ -11,6 +11,14 @@ public class Epic extends Task {
         this.listSubtaskId = listSubtaskId;
     }
 
+    public void deleteSubtaskId(Long id) {
+        listSubtaskId.remove(id);
+    }
+
+    public void addSubtaskId(Long id) {
+        listSubtaskId.add(id);
+    }
+
     public List<Long> getListSubtaskId() {
         return listSubtaskId;
     }

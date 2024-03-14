@@ -44,8 +44,8 @@ public class Manager {
     public Optional<Subtask> createSubtask(Subtask subtask) {
         if (epicList.containsKey(subtask.getEpicId())) {
             subtask.setId(ID);
+            epicList.get(subtask.getEpicId()).addSubtaskId(ID);
             subtaskList.put(ID++, subtask);
-            epicList.get(subtask.getEpicId()).getListSubtaskId().add(subtask.getId());
             updateStatus(epicList.get(subtask.getEpicId()));
             return Optional.of(subtask);
         }
@@ -116,8 +116,7 @@ public class Manager {
             return true;
         } else if (subtaskList.containsKey(id)) {
             Subtask deletedSubtask = subtaskList.remove(id);
-            epicList.get(deletedSubtask.getEpicId()).getListSubtaskId()
-                    .removeIf(x -> x.equals(deletedSubtask.getId()));
+            epicList.get(deletedSubtask.getEpicId()).deleteSubtaskId(deletedSubtask.getId());
             updateStatus(epicList.get(deletedSubtask.getEpicId()));
             return true;
         } else if (epicList.containsKey(id)) {
