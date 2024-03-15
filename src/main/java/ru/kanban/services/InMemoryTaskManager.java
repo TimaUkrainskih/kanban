@@ -14,21 +14,11 @@ public class InMemoryTaskManager implements TaskManager {
     private static Map<Long, Subtask> subtaskList = new HashMap<>();
     private static Map<Long, Epic> epicList = new HashMap<>();
     private static Long ID = 1L;
-    private Deque<Long> history = new LinkedList<>();
+    private static Deque<Task> history = new LinkedList<>();
 
     @Override
     public List<Task> getHistory() {
-        List<Task> result = new ArrayList<>();
-        for (Long id : history) {
-            if (taskList.containsKey(id)) {
-                result.add(taskList.get(id));
-            } else if (subtaskList.containsKey(id)) {
-                result.add(subtaskList.get(id));
-            } else if (epicList.containsKey(id)) {
-                result.add(epicList.get(id));
-            }
-        }
-        return result;
+        return new LinkedList<>(history);
     }
 
     public Optional<Task> getTask(Long id) {
@@ -59,7 +49,13 @@ public class InMemoryTaskManager implements TaskManager {
         if (history.size() >= HISTORY_SIZE) {
             history.pollLast();
         }
-        history.offerFirst(id);
+        if (taskList.containsKey(id)) {
+            history.add(taskList.get(id));
+        } else if (subtaskList.containsKey(id)) {
+            history.add(subtaskList.get(id));
+        } else if (epicList.containsKey(id)) {
+            history.add(epicList.get(id));
+        }
     }
 
     public Optional<Task> createTask(Task task) {
