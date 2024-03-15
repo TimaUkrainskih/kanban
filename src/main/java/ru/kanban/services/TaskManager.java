@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface TaskManager {
     List<Task> getHistory();
+
     Optional<Task> getTask(Long id);
 
     Optional<Task> getSubtask(Long id);
