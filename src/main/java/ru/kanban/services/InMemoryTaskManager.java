@@ -8,13 +8,59 @@ import ru.kanban.models.Task;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Manager {
+public class InMemoryTaskManager implements TaskManager {
+    private static final int HISTORY_SIZE = 10;
     private static Map<Long, Task> taskList = new HashMap<>();
     private static Map<Long, Subtask> subtaskList = new HashMap<>();
     private static Map<Long, Epic> epicList = new HashMap<>();
     private static Long ID = 1L;
-    private static final int HISTORY_SIZE = 10;
     private Deque<Long> history = new LinkedList<>();
+
+    @Override
+    public List<Task> getHistory() {
+        List<Task> result = new ArrayList<>();
+        for (Long id : history) {
+            if (taskList.containsKey(id)) {
+                result.add(taskList.get(id));
+            } else if (subtaskList.containsKey(id)) {
+                result.add(subtaskList.get(id));
+            } else if (epicList.containsKey(id)) {
+                result.add(epicList.get(id));
+            }
+        }
+        return result;
+    }
+
+    public Optional<Task> getTask(Long id) {
+        if (taskList.containsKey(id)) {
+            addToHistory(id);
+            return Optional.of(taskList.get(id));
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Task> getSubtask(Long id) {
+        if (subtaskList.containsKey(id)) {
+            addToHistory(id);
+            return Optional.of(subtaskList.get(id));
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Task> getEpic(Long id) {
+        if (epicList.containsKey(id)) {
+            addToHistory(id);
+            return Optional.of(epicList.get(id));
+        }
+        return Optional.empty();
+    }
+
+    private void addToHistory(Long id) {
+        if (history.size() >= HISTORY_SIZE) {
+            history.pollLast();
+        }
+        history.offerFirst(id);
+    }
 
     public Optional<Task> createTask(Task task) {
         task.setId(ID);
