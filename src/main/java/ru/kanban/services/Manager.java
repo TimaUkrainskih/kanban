@@ -13,6 +13,8 @@ public class Manager {
     private static Map<Long, Subtask> subtaskList = new HashMap<>();
     private static Map<Long, Epic> epicList = new HashMap<>();
     private static Long ID = 1L;
+    private static final int HISTORY_SIZE = 10;//fdsfsfd
+    private Deque<Long> history = new LinkedList<>();
 
     public Optional<Task> createTask(Task task) {
         task.setId(ID);
