@@ -22,40 +22,28 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public Optional<Task> getTask(Long id) {
-        if (taskList.containsKey(id)) {
-            addToHistory(id);
-            return Optional.of(taskList.get(id));
-        }
-        return Optional.empty();
-    }
-
-    public Optional<Task> getSubtask(Long id) {
-        if (subtaskList.containsKey(id)) {
-            addToHistory(id);
-            return Optional.of(subtaskList.get(id));
-        }
-        return Optional.empty();
+        Optional<Task> task = findById(id);
+        task.ifPresent(this::addToHistory);
+        return task;
     }
 
     public Optional<Task> getEpic(Long id) {
-        if (epicList.containsKey(id)) {
-            addToHistory(id);
-            return Optional.of(epicList.get(id));
-        }
-        return Optional.empty();
+        Optional<Task> epic = findById(id);
+        epic.ifPresent(this::addToHistory);
+        return epic;
     }
 
-    private void addToHistory(Long id) {
+    public Optional<Task> getSubtask(Long id) {
+        Optional<Task> subtask = findById(id);
+        subtask.ifPresent(this::addToHistory);
+        return subtask;
+    }
+
+    private void addToHistory(Task task) {
         if (history.size() >= HISTORY_SIZE) {
             history.pollLast();
         }
-        if (taskList.containsKey(id)) {
-            history.add(taskList.get(id));
-        } else if (subtaskList.containsKey(id)) {
-            history.add(subtaskList.get(id));
-        } else if (epicList.containsKey(id)) {
-            history.add(epicList.get(id));
-        }
+        history.add(task);
     }
 
     public Optional<Task> createTask(Task task) {
