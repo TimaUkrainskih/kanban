@@ -13,7 +13,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Long, Task> taskList = new HashMap<>();
     private final Map<Long, Subtask> subtaskList = new HashMap<>();
     private final Map<Long, Epic> epicList = new HashMap<>();
-    private Long ID = 1L;
+    private Long id = 1L;
     private final Deque<Task> history = new LinkedList<>();
 
     @Override
@@ -47,16 +47,16 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public Optional<Task> createTask(Task task) {
-        task.setId(ID);
-        taskList.put(ID++, task);
+        task.setId(id);
+        taskList.put(id++, task);
         return Optional.of(task);
     }
 
     public Optional<Subtask> createSubtask(Subtask subtask) {
         if (epicList.containsKey(subtask.getEpicId())) {
-            subtask.setId(ID);
-            epicList.get(subtask.getEpicId()).addSubtaskId(ID);
-            subtaskList.put(ID++, subtask);
+            subtask.setId(id);
+            epicList.get(subtask.getEpicId()).addSubtaskId(id);
+            subtaskList.put(id++, subtask);
             updateStatus(epicList.get(subtask.getEpicId()));
             return Optional.of(subtask);
         }
@@ -64,9 +64,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public Optional<Epic> createEpic(Epic epic) {
-        epic.setId(ID);
+        epic.setId(id);
         updateStatus(epic);
-        epicList.put(ID++, epic);
+        epicList.put(id++, epic);
         return Optional.of(epic);
     }
 
