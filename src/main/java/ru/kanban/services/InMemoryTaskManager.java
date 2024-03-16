@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     private static final int HISTORY_SIZE = 10;
-    private static Map<Long, Task> taskList = new HashMap<>();
-    private static Map<Long, Subtask> subtaskList = new HashMap<>();
-    private static Map<Long, Epic> epicList = new HashMap<>();
-    private static Long ID = 1L;
-    private static Deque<Task> history = new LinkedList<>();
+    private final Map<Long, Task> taskList = new HashMap<>();
+    private final Map<Long, Subtask> subtaskList = new HashMap<>();
+    private final Map<Long, Epic> epicList = new HashMap<>();
+    private Long ID = 1L;
+    private final Deque<Task> history = new LinkedList<>();
 
     @Override
     public List<Task> getHistory() {
