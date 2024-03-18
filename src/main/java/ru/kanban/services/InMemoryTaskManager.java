@@ -9,41 +9,33 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
-    private static final int HISTORY_SIZE = 10;
     private final Map<Long, Task> taskList = new HashMap<>();
     private final Map<Long, Subtask> subtaskList = new HashMap<>();
     private final Map<Long, Epic> epicList = new HashMap<>();
     private Long id = 1L;
-    private final Deque<Task> history = new LinkedList<>();
+    private HistoryManager history;
 
     @Override
     public List<Task> getHistory() {
-        return new LinkedList<>(history);
+        return history.getHistory();
     }
 
     public Optional<Task> getTask(Long id) {
         Optional<Task> task = findById(id);
-        task.ifPresent(this::addToHistory);
+        task.ifPresent(history::addToHistory);
         return task;
     }
 
     public Optional<Task> getEpic(Long id) {
         Optional<Task> epic = findById(id);
-        epic.ifPresent(this::addToHistory);
+        epic.ifPresent(history::addToHistory);
         return epic;
     }
 
     public Optional<Task> getSubtask(Long id) {
         Optional<Task> subtask = findById(id);
-        subtask.ifPresent(this::addToHistory);
+        subtask.ifPresent(history::addToHistory);
         return subtask;
-    }
-
-    private void addToHistory(Task task) {
-        if (history.size() >= HISTORY_SIZE) {
-            history.pollLast();
-        }
-        history.add(task);
     }
 
     public Optional<Task> createTask(Task task) {
