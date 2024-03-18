@@ -4,6 +4,7 @@ import ru.kanban.models.Epic;
 import ru.kanban.models.Status;
 import ru.kanban.models.Subtask;
 import ru.kanban.models.Task;
+import ru.kanban.utils.Managers;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,37 +14,46 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Long, Subtask> subtaskList = new HashMap<>();
     private final Map<Long, Epic> epicList = new HashMap<>();
     private Long id = 1L;
-    private HistoryManager history;
+    private final HistoryManager history;
+
+    public InMemoryTaskManager(HistoryManager history) {
+        this.history = history;
+    }
 
     @Override
     public List<Task> getHistory() {
         return history.getHistory();
     }
 
+    @Override
     public Optional<Task> getTask(Long id) {
         Optional<Task> task = findById(id);
         task.ifPresent(history::addToHistory);
         return task;
     }
 
+    @Override
     public Optional<Task> getEpic(Long id) {
         Optional<Task> epic = findById(id);
         epic.ifPresent(history::addToHistory);
         return epic;
     }
 
+    @Override
     public Optional<Task> getSubtask(Long id) {
         Optional<Task> subtask = findById(id);
         subtask.ifPresent(history::addToHistory);
         return subtask;
     }
 
+    @Override
     public Optional<Task> createTask(Task task) {
         task.setId(id);
         taskList.put(id++, task);
         return Optional.of(task);
     }
 
+    @Override
     public Optional<Subtask> createSubtask(Subtask subtask) {
         if (epicList.containsKey(subtask.getEpicId())) {
             subtask.setId(id);
@@ -55,6 +65,7 @@ public class InMemoryTaskManager implements TaskManager {
         return Optional.empty();
     }
 
+    @Override
     public Optional<Epic> createEpic(Epic epic) {
         epic.setId(id);
         updateStatus(epic);
@@ -62,6 +73,7 @@ public class InMemoryTaskManager implements TaskManager {
         return Optional.of(epic);
     }
 
+    @Override
     public List<Task> listOfAllTasks() {
         List<Task> result = new ArrayList<>();
         result.addAll(taskList.values().stream().toList());
@@ -70,6 +82,7 @@ public class InMemoryTaskManager implements TaskManager {
         return result;
     }
 
+    @Override
     public Optional<Task> findById(Long id) {
         if (taskList.containsKey(id)) {
             return Optional.ofNullable(taskList.get(id));
@@ -81,12 +94,14 @@ public class InMemoryTaskManager implements TaskManager {
         return Optional.empty();
     }
 
+    @Override
     public void deleteAllTasks() {
         taskList.clear();
         subtaskList.clear();
         epicList.clear();
     }
 
+    @Override
     public Optional<Task> updateTask(Task updatedTask) {
         if (taskList.containsKey(updatedTask.getId())) {
             taskList.put(updatedTask.getId(), updatedTask);
@@ -95,6 +110,7 @@ public class InMemoryTaskManager implements TaskManager {
         return Optional.empty();
     }
 
+    @Override
     public Optional<Subtask> updateSubtask(Subtask updateSubtask) {
         if (subtaskList.containsKey(updateSubtask.getId())) {
             subtaskList.put(updateSubtask.getId(), updateSubtask);
@@ -104,6 +120,7 @@ public class InMemoryTaskManager implements TaskManager {
         return Optional.empty();
     }
 
+    @Override
     public Optional<Epic> updateEpic(Epic updatedEpic) {
         if (epicList.containsKey(updatedEpic.getId())) {
             updateStatus(updatedEpic);
@@ -113,6 +130,7 @@ public class InMemoryTaskManager implements TaskManager {
         return Optional.empty();
     }
 
+    @Override
     public boolean deleteTask(Long id) {
         if (taskList.containsKey(id)) {
             taskList.remove(id);
@@ -129,6 +147,7 @@ public class InMemoryTaskManager implements TaskManager {
         return false;
     }
 
+    @Override
     public List<Subtask> getSubtasksForEpic(Epic epic) {
         return epic.getListSubtaskId().stream()
                 .filter(subtaskList::containsKey)
