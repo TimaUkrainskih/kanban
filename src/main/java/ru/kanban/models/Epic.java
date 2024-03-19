@@ -1,13 +1,19 @@
 package ru.kanban.models;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
-    private List<Long> listSubtaskId;
+    private List<Long> listSubtaskId = new ArrayList<>();
 
     public Epic(String title, String description, long id, Status progress) {
         super(title, description, id, progress);
+    }
+
+    public Epic(String title, String description, Status progress) {
+        super(title, description, progress);
     }
 
     public void deleteSubtaskId(Long id) {

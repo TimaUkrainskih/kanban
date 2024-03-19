@@ -15,6 +15,12 @@ public class Task {
         this.progress = progress;
     }
 
+    public Task(String title, String description, Status progress) {
+        this.title = title;
+        this.description = description;
+        this.progress = progress;
+    }
+
     public void updateStatus(Status status) {
         this.progress = status;
     }
