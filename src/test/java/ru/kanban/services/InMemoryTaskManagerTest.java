@@ -15,13 +15,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class InMemoryTaskManagerTest {
 
     private InMemoryTaskManager manager;
+    private Task task;
+    private Subtask subtask;
+    private Epic epic;
 
     @BeforeEach
     void setUp() {
         manager = new InMemoryTaskManager(Managers.getDefaultHistoryManager());
-        Task task = new Task("title1", "description", Status.NEW);
-        Subtask subtask = new Subtask("title1", "description", Status.NEW, 2L);
-        Epic epic = new Epic("title1", "description", Status.NEW);
+        task = new Task("title1", "description", Status.NEW);
+        subtask = new Subtask("title1", "description", Status.NEW, 2L);
+        epic = new Epic("title1", "description", Status.NEW);
         manager.createTask(task);
         manager.createEpic(epic);
         manager.createSubtask(subtask);
@@ -31,9 +34,6 @@ class InMemoryTaskManagerTest {
     @Test
     void listOfAllTasks() {
         List<Task> result = manager.listOfAllTasks();
-        Task task = new Task("title1", "description", 1L, Status.NEW);
-        Subtask subtask = new Subtask("title1", "description", 3L, Status.NEW, 2L);
-        Epic epic = new Epic("title1", "description", 2L, Status.NEW);
         epic.addSubtaskId(3L);
         List<Task> expected = List.of(task, subtask, epic);
         assertTrue(result.containsAll(expected));
@@ -44,9 +44,6 @@ class InMemoryTaskManagerTest {
         manager.getTask(1L);
         manager.getEpic(2L);
         manager.getSubtask(3L);
-        Task task = new Task("title1", "description", 1L, Status.NEW);
-        Subtask subtask = new Subtask("title1", "description", 3L, Status.NEW, 2L);
-        Epic epic = new Epic("title1", "description", 2L, Status.NEW);
         epic.addSubtaskId(3L);
         List<Task> result = manager.getHistory();
         List<Task> expected = List.of(subtask, epic, task);
@@ -56,7 +53,6 @@ class InMemoryTaskManagerTest {
     @Test
     void findById_ReturnsOptionalContainingTask() {
         Task task = manager.findById(3L).get();
-        Subtask subtask = new Subtask("title1", "description", 3L, Status.NEW, 2L);
         assertTrue(task.equals(subtask));
     }
 
@@ -103,7 +99,7 @@ class InMemoryTaskManagerTest {
     void deleteTask() {
         manager.deleteTask(3L);
         manager.deleteTask(2L);
-        List<Task> expected = List.of(new Task("title1", "description", 1L, Status.NEW));
+        List<Task> expected = List.of(task);
         List<Task> result = manager.listOfAllTasks();
         assertTrue(expected.equals(result));
     }
@@ -111,7 +107,7 @@ class InMemoryTaskManagerTest {
     @Test
     void getSubtasksForEpic() {
         List<Subtask> result = manager.getSubtasksForEpic((Epic) manager.getEpic(2L).get());
-        List<Subtask> expected = List.of(new Subtask("title1", "description", 3L, Status.NEW, 2L));
+        List<Subtask> expected = List.of(subtask);
         assertTrue(expected.equals(result));
     }
 
