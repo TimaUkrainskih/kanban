@@ -10,12 +10,6 @@ import java.util.Optional;
 public interface TaskManager {
     List<Task> getHistory();
 
-    Optional<Task> getTask(Long id);
-
-    Optional<Task> getSubtask(Long id);
-
-    Optional<Task> getEpic(Long id);
-
     Optional<Task> createTask(Task task);
 
     Optional<Subtask> createSubtask(Subtask subtask);

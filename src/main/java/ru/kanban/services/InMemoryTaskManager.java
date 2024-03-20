@@ -25,27 +25,6 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Optional<Task> getTask(Long id) {
-        Optional<Task> task = findById(id);
-        task.ifPresent(history::addToHistory);
-        return task;
-    }
-
-    @Override
-    public Optional<Task> getEpic(Long id) {
-        Optional<Task> epic = findById(id);
-        epic.ifPresent(history::addToHistory);
-        return epic;
-    }
-
-    @Override
-    public Optional<Task> getSubtask(Long id) {
-        Optional<Task> subtask = findById(id);
-        subtask.ifPresent(history::addToHistory);
-        return subtask;
-    }
-
-    @Override
     public Optional<Task> createTask(Task task) {
         task.setId(id);
         taskList.put(id++, task);
@@ -84,10 +63,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Optional<Task> findById(Long id) {
         if (taskList.containsKey(id)) {
+            history.addToHistory(taskList.get(id));
             return Optional.ofNullable(taskList.get(id));
         } else if (subtaskList.containsKey(id)) {
+            history.addToHistory(subtaskList.get(id));
             return Optional.ofNullable(subtaskList.get(id));
         } else if (epicList.containsKey(id)) {
+            history.addToHistory(epicList.get(id));
             return Optional.ofNullable(epicList.get(id));
         }
         return Optional.empty();

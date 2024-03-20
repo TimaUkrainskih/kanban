@@ -41,9 +41,9 @@ class InMemoryTaskManagerTest {
 
     @Test
     void getHistory() {
-        manager.getTask(1L);
-        manager.getEpic(2L);
-        manager.getSubtask(3L);
+        manager.findById(1L);
+        manager.findById(2L);
+        manager.findById(3L);
         epic.addSubtaskId(3L);
         List<Task> result = manager.getHistory();
         List<Task> expected = List.of(subtask, epic, task);
@@ -106,7 +106,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void getSubtasksForEpic() {
-        List<Subtask> result = manager.getSubtasksForEpic((Epic) manager.getEpic(2L).get());
+        List<Subtask> result = manager.getSubtasksForEpic((Epic) manager.findById(2L).get());
         List<Subtask> expected = List.of(subtask);
         assertTrue(expected.equals(result));
     }
