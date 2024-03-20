@@ -63,14 +63,17 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Optional<Task> findById(Long id) {
         if (taskList.containsKey(id)) {
-            history.addToHistory(taskList.get(id));
-            return Optional.ofNullable(taskList.get(id));
+            Task task = taskList.get(id);
+            history.addToHistory(task);
+            return Optional.ofNullable(task);
         } else if (subtaskList.containsKey(id)) {
-            history.addToHistory(subtaskList.get(id));
-            return Optional.ofNullable(subtaskList.get(id));
+            Subtask subtask = subtaskList.get(id);
+            history.addToHistory(subtask);
+            return Optional.ofNullable(subtask);
         } else if (epicList.containsKey(id)) {
-            history.addToHistory(epicList.get(id));
-            return Optional.ofNullable(epicList.get(id));
+            Epic epic = epicList.get(id);
+            history.addToHistory(epic);
+            return Optional.ofNullable(epic);
         }
         return Optional.empty();
     }
