@@ -9,6 +9,7 @@ import ru.kanban.models.Task;
 import ru.kanban.utils.Managers;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,14 +33,6 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void listOfAllTasks() {
-        List<Task> result = manager.listOfAllTasks();
-        epic.addSubtaskId(3L);
-        List<Task> expected = List.of(task, subtask, epic);
-        assertTrue(result.containsAll(expected));
-    }
-
-    @Test
     void getHistory() {
         manager.findById(1L);
         manager.findById(2L);
@@ -49,6 +42,55 @@ class InMemoryTaskManagerTest {
         List<Task> expected = List.of(subtask, epic, task);
         assertTrue(result.equals(expected));
     }
+
+    @Test
+    void createTask() {
+        Task expected = new Task("titleCreateNewTask",
+                "descriptionCreateNewTask",
+                Status.IN_PROGRESS);
+        manager.createTask(expected);
+        Task result = manager.findById(4L).get();
+        assertTrue(expected.equals(result));
+    }
+
+    @Test
+    void createSubtask_NoEpic() {
+        Subtask subtaskNoEpic = new Subtask("titleCreateNewSubtask",
+                "descriptionCreateNewSubtask",
+                Status.IN_PROGRESS, 10L);
+        manager.createSubtask(subtaskNoEpic);
+        Optional<Task> result = manager.findById(4L);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void createSubtask_ExistEpic() {
+        Subtask subtaskNoEpic = new Subtask("titleCreateNewSubtask",
+                "descriptionCreateNewSubtask",
+                Status.IN_PROGRESS, 2L);
+        manager.createSubtask(subtaskNoEpic);
+        Task result = manager.findById(4L).get();
+        assertTrue(subtaskNoEpic.equals(result));
+    }
+
+    @Test
+    void createEpic() {
+        Epic expected = new Epic("titleCreateNewEpic",
+                "descriptionCreateNewEpic",
+                Status.NEW);
+        manager.createEpic(expected);
+        Task result = manager.findById(4L).get();
+        assertTrue(expected.equals(result));
+    }
+
+    @Test
+    void listOfAllTasks() {
+        List<Task> result = manager.listOfAllTasks();
+        epic.addSubtaskId(3L);
+        List<Task> expected = List.of(task, subtask, epic);
+        assertTrue(result.containsAll(expected));
+    }
+
 
     @Test
     void findById_ReturnsOptionalContainingTask() {
