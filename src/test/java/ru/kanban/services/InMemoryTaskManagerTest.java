@@ -11,6 +11,7 @@ import ru.kanban.utils.Managers;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
@@ -40,7 +41,7 @@ class InMemoryTaskManagerTest {
         epic.addSubtaskId(3L);
         List<Task> result = manager.getHistory();
         List<Task> expected = List.of(subtask, epic, task);
-        assertTrue(result.equals(expected));
+        assertThat(result.equals(expected));
     }
 
     @Test
@@ -50,7 +51,7 @@ class InMemoryTaskManagerTest {
                 Status.IN_PROGRESS);
         manager.createTask(expected);
         Task result = manager.findById(4L).get();
-        assertTrue(expected.equals(result));
+        assertThat(expected.equals(result));
     }
 
     @Test
@@ -70,7 +71,7 @@ class InMemoryTaskManagerTest {
                 Status.IN_PROGRESS, 2L);
         manager.createSubtask(subtaskNoEpic);
         Task result = manager.findById(4L).get();
-        assertTrue(subtaskNoEpic.equals(result));
+        assertThat(subtaskNoEpic.equals(result));
     }
 
     @Test
@@ -80,7 +81,7 @@ class InMemoryTaskManagerTest {
                 Status.NEW);
         manager.createEpic(expected);
         Task result = manager.findById(4L).get();
-        assertTrue(expected.equals(result));
+        assertThat(expected.equals(result));
     }
 
     @Test
@@ -94,7 +95,7 @@ class InMemoryTaskManagerTest {
     @Test
     void findById_ReturnsOptionalContainingTask() {
         Task task = manager.findById(3L).get();
-        assertTrue(task.equals(subtask));
+        assertThat(task.equals(subtask));
     }
 
     @Test
@@ -110,7 +111,7 @@ class InMemoryTaskManagerTest {
                 Status.IN_PROGRESS);
         manager.updateTask(expected);
         Task result = manager.findById(1L).get();
-        assertTrue(expected.equals(result));
+        assertThat(expected.equals(result));
     }
 
     @Test
@@ -122,7 +123,7 @@ class InMemoryTaskManagerTest {
                 2L);
         manager.updateSubtask(expected);
         Task result = manager.findById(3L).get();
-        assertTrue(expected.equals(result));
+        assertThat(expected.equals(result));
     }
 
     @Test
@@ -133,7 +134,21 @@ class InMemoryTaskManagerTest {
                 Status.IN_PROGRESS);
         manager.updateEpic(expected);
         Task result = manager.findById(2L).get();
-        assertTrue(expected.equals(result));
+        assertThat(expected.equals(result));
+    }
+
+    @Test
+    void updateStatusEpic() {
+        Subtask sb = new Subtask("titleSubtask",
+                "descriptionSubtask",
+                Status.IN_PROGRESS,
+                2L);
+        manager.createSubtask(sb);
+        Epic expected = new Epic("title1", "description", 2L, Status.IN_PROGRESS);
+        expected.addSubtaskId(3L);
+        expected.addSubtaskId(4L);
+        Task result = manager.findById(2L).get();
+        assertThat(expected.equals(result));
     }
 
     @Test
@@ -142,14 +157,13 @@ class InMemoryTaskManagerTest {
         manager.deleteTask(2L);
         List<Task> expected = List.of(task);
         List<Task> result = manager.listOfAllTasks();
-        assertTrue(expected.equals(result));
+        assertThat(expected.equals(result));
     }
 
     @Test
     void getSubtasksForEpic() {
         List<Subtask> result = manager.getSubtasksForEpic((Epic) manager.findById(2L).get());
         List<Subtask> expected = List.of(subtask);
-        assertTrue(expected.equals(result));
+        assertThat(expected.equals(result));
     }
-
 }
