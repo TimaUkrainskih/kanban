@@ -91,7 +91,6 @@ class InMemoryTaskManagerTest {
         assertTrue(result.containsAll(expected));
     }
 
-
     @Test
     void findById_ReturnsOptionalContainingTask() {
         Task task = manager.findById(3L).get();
