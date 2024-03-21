@@ -11,8 +11,7 @@ import ru.kanban.utils.Managers;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class InMemoryTaskManagerTest {
 
@@ -41,7 +40,7 @@ class InMemoryTaskManagerTest {
         epic.addSubtaskId(3L);
         List<Task> result = manager.getHistory();
         List<Task> expected = List.of(subtask, epic, task);
-        assertThat(result.equals(expected));
+        assertThat(expected).isEqualTo(result);
     }
 
     @Test
@@ -51,7 +50,7 @@ class InMemoryTaskManagerTest {
                 Status.IN_PROGRESS);
         manager.createTask(expected);
         Task result = manager.findById(4L).get();
-        assertThat(expected.equals(result));
+        assertThat(expected).isEqualTo(result);
     }
 
     @Test
@@ -61,7 +60,7 @@ class InMemoryTaskManagerTest {
                 Status.IN_PROGRESS, 10L);
         manager.createSubtask(subtaskNoEpic);
         Optional<Task> result = manager.findById(4L);
-        assertTrue(result.isEmpty());
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -71,7 +70,7 @@ class InMemoryTaskManagerTest {
                 Status.IN_PROGRESS, 2L);
         manager.createSubtask(subtaskNoEpic);
         Task result = manager.findById(4L).get();
-        assertThat(subtaskNoEpic.equals(result));
+        assertThat(subtaskNoEpic).isEqualTo(result);
     }
 
     @Test
@@ -81,7 +80,7 @@ class InMemoryTaskManagerTest {
                 Status.NEW);
         manager.createEpic(expected);
         Task result = manager.findById(4L).get();
-        assertThat(expected.equals(result));
+        assertThat(expected).isEqualTo(result);
     }
 
     @Test
@@ -89,18 +88,18 @@ class InMemoryTaskManagerTest {
         List<Task> result = manager.listOfAllTasks();
         epic.addSubtaskId(3L);
         List<Task> expected = List.of(task, subtask, epic);
-        assertTrue(result.containsAll(expected));
+        assertThat(result).containsAll(expected);
     }
 
     @Test
     void findById_ReturnsOptionalContainingTask() {
         Task task = manager.findById(3L).get();
-        assertThat(task.equals(subtask));
+        assertThat(task).isEqualTo(subtask);
     }
 
     @Test
     void findById_ReturnsEmptyOptional() {
-        assertTrue(manager.findById(4L).isEmpty());
+        assertThat(manager.findById(4L)).isEmpty();
     }
 
     @Test
@@ -111,7 +110,7 @@ class InMemoryTaskManagerTest {
                 Status.IN_PROGRESS);
         manager.updateTask(expected);
         Task result = manager.findById(1L).get();
-        assertThat(expected.equals(result));
+        assertThat(expected).isEqualTo(result);
     }
 
     @Test
@@ -123,7 +122,7 @@ class InMemoryTaskManagerTest {
                 2L);
         manager.updateSubtask(expected);
         Task result = manager.findById(3L).get();
-        assertThat(expected.equals(result));
+        assertThat(expected).isEqualTo(result);
     }
 
     @Test
@@ -134,7 +133,7 @@ class InMemoryTaskManagerTest {
                 Status.IN_PROGRESS);
         manager.updateEpic(expected);
         Task result = manager.findById(2L).get();
-        assertThat(expected.equals(result));
+        assertThat(expected).isEqualTo(result);
     }
 
     @Test
@@ -148,7 +147,7 @@ class InMemoryTaskManagerTest {
         expected.addSubtaskId(3L);
         expected.addSubtaskId(4L);
         Task result = manager.findById(2L).get();
-        assertThat(expected.equals(result));
+        assertThat(expected).isEqualTo(result);
     }
 
     @Test
@@ -157,13 +156,13 @@ class InMemoryTaskManagerTest {
         manager.deleteTask(2L);
         List<Task> expected = List.of(task);
         List<Task> result = manager.listOfAllTasks();
-        assertThat(expected.equals(result));
+        assertThat(expected).isEqualTo(result);
     }
 
     @Test
     void getSubtasksForEpic() {
         List<Subtask> result = manager.getSubtasksForEpic((Epic) manager.findById(2L).get());
         List<Subtask> expected = List.of(subtask);
-        assertThat(expected.equals(result));
+        assertThat(expected).isEqualTo(result);
     }
 }
