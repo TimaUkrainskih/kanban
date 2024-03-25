@@ -54,7 +54,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void createSubtask_NoEpic() {
+    void createSubtaskNoEpic() {
         Subtask subtaskNoEpic = new Subtask("titleCreateNewSubtask",
                 "descriptionCreateNewSubtask",
                 Status.IN_PROGRESS, 10L);
@@ -64,7 +64,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void createSubtask_ExistEpic() {
+    void createSubtaskExistEpic() {
         Subtask subtaskNoEpic = new Subtask("titleCreateNewSubtask",
                 "descriptionCreateNewSubtask",
                 Status.IN_PROGRESS, 2L);
@@ -92,13 +92,13 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void findById_ReturnsOptionalContainingTask() {
+    void findByIdReturnsOptionalContainingTask() {
         Task task = manager.findById(3L).get();
         assertThat(task).isEqualTo(subtask);
     }
 
     @Test
-    void findById_ReturnsEmptyOptional() {
+    void findByIdReturnsEmptyOptional() {
         assertThat(manager.findById(4L)).isEmpty();
     }
 
@@ -148,6 +148,31 @@ class InMemoryTaskManagerTest {
         expected.addSubtaskId(4L);
         Task result = manager.findById(2L).get();
         assertThat(expected).isEqualTo(result);
+    }
+
+    @Test
+    void updateEpicStatusWhenAddSubtask() {
+        Subtask subtask = new Subtask("titleNewSubtask", "descriptionNewSubtask", Status.IN_PROGRESS, 2L);
+        manager.createSubtask(subtask);
+        Epic updatedEpic = (Epic) manager.findById(2L).get();
+        assertThat(updatedEpic.getProgress()).isEqualTo(Status.IN_PROGRESS);
+    }
+
+    @Test
+    void epicStatusNotChangedWhenAddSubtask() {
+        Subtask subtaskFirst = new Subtask("titleNewSubtask1", "descriptionNewSubtask1", Status.IN_PROGRESS, 2L);
+        Subtask subtaskSecond = new Subtask("titleNewSubtask2", "descriptionNewSubtask2", Status.NEW, 2L);
+        manager.createSubtask(subtaskFirst);
+        manager.createSubtask(subtaskSecond);
+        Epic retrievedEpic = (Epic) manager.findById(2L).get();
+        assertThat(retrievedEpic.getProgress()).isEqualTo(Status.IN_PROGRESS);
+    }
+
+    @Test
+    void createEpicWithIncorrectStatus() {
+        Epic epicWithIncorrectStatus = new Epic("titleIncorrectEpic", "descriptionIncorrectEpic", Status.DONE);
+        manager.createEpic(epicWithIncorrectStatus);
+        assertThat(epicWithIncorrectStatus.getProgress()).isEqualTo(Status.NEW);
     }
 
     @Test
