@@ -103,6 +103,13 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void deleteAllTasks() {
+        manager.deleteAllTasks();
+        List<Task> allTask = manager.listOfAllTasks();
+        assertThat(allTask).isEmpty();
+    }
+
+    @Test
     void updateTask() {
         Task expected = new Task("titleUpdateTask",
                 "descriptionUpdateTask",
@@ -182,6 +189,24 @@ class InMemoryTaskManagerTest {
         List<Task> expected = List.of(task);
         List<Task> result = manager.listOfAllTasks();
         assertThat(expected).isEqualTo(result);
+    }
+
+    @Test
+    void deleteNonExistentTask() {
+        boolean isDelete = manager.deleteTask(12356L);
+        assertThat(isDelete).isFalse();
+    }
+
+    @Test
+    void deleteSubtaskFromEpic() {
+        Subtask subtaskFirst = new Subtask("titleNewSubtask1", "descriptionNewSubtask1", Status.IN_PROGRESS, 2L);
+        Subtask subtaskSecond = new Subtask("titleNewSubtask2", "descriptionNewSubtask2", Status.NEW, 2L);
+        manager.createSubtask(subtaskFirst);
+        manager.createSubtask(subtaskSecond);
+        manager.deleteTask(4L);
+        Epic result = (Epic) manager.findById(2L).get();
+        assertThat(result.getProgress()).isEqualTo(Status.NEW);
+        assertThat(result.getListSubtaskId().contains(2L)).isFalse();
     }
 
     @Test
