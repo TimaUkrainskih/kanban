@@ -20,11 +20,10 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void addToHistory() {
-        Task task1 = new Task("title1", "description1", Status.NEW);
-        Task task2 = new Task("title2", "description2", Status.IN_PROGRESS);
+        Task task1 = new Task("title1", "description1", 1, Status.NEW);
+        Task task2 = new Task("title2", "description2", 2, Status.IN_PROGRESS);
         historyManager.addToHistory(task1);
         historyManager.addToHistory(task2);
-
         List<Task> history = historyManager.getHistory();
         assertThat(2).isEqualTo(history.size());
         assertThat(task2).isEqualTo(history.get(0));
@@ -34,12 +33,11 @@ class InMemoryHistoryManagerTest {
     @Test
     void addToHistorySizeLimit() {
         for (int i = 0; i < 15; i++) {
-            Task task = new Task("title" + i, "description" + i, Status.IN_PROGRESS);
+            Task task = new Task("title" + i, "description" + i, i, Status.IN_PROGRESS);
             historyManager.addToHistory(task);
         }
-
         List<Task> history = historyManager.getHistory();
-        assertThat(10).isEqualTo(history.size());
+        assertThat(15).isEqualTo(history.size());
     }
 
     @Test
