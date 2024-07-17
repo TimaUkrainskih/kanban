@@ -1,84 +1,77 @@
 package ru.kanban.services;
 
+import ru.kanban.models.Node;
 import ru.kanban.models.Task;
 
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private static class Node {
+    private final Map<Long, Node> nodeMap = new HashMap<>();
 
-        Task task;
+    private final CustomLinkedList listHistory = new CustomLinkedList();
 
-        Node prev;
+    private class CustomLinkedList {
 
-        Node next;
+        private Node head;
 
-        Node(Task task) {
-            this.task = task;
+        private Node tail;
+
+        public void linkLast(Task task) {
+            Node newNode = new Node(task);
+            if (tail == null) {
+                head = tail = newNode;
+            } else {
+                tail.setNext(newNode);
+                newNode.setPrev(tail);
+                tail = newNode;
+            }
+            nodeMap.put(task.getId(), newNode);
+        }
+
+        public List<Task> getTasks() {
+            List<Task> tasks = new ArrayList<>();
+            Node current = tail;
+            while (current != null) {
+                tasks.add(current.getTask());
+                current = current.getPrev();
+            }
+            return tasks;
+        }
+
+        public void removeNode(Node node) {
+            if (node == null) return;
+            if (node.getPrev() != null) {
+                node.getPrev().setNext(node.getNext());
+            } else {
+                head = node.getNext();
+            }
+            if (node.getNext() != null) {
+                node.getNext().setPrev(node.getPrev());
+            } else {
+                tail = node.getPrev();
+            }
+            nodeMap.remove(node.getTask().getId());
         }
     }
-
-    private Node head;
-
-    private Node tail;
-
-    private final Map<Long, Node> nodeMap = new HashMap<>();
 
     @Override
     public void addToHistory(Task task) {
         if (nodeMap.containsKey(task.getId())) {
-            removeNode(nodeMap.get(task.getId()));
+            listHistory.removeNode(nodeMap.get(task.getId()));
         }
-        linkLast(task);
+        listHistory.linkLast(task);
     }
 
     @Override
     public List<Task> getHistory() {
-        return getTasks();
+        return listHistory.getTasks();
     }
 
     @Override
     public void remove(long id) {
         if (nodeMap.containsKey(id)) {
-            removeNode(nodeMap.get(id));
+            listHistory.removeNode(nodeMap.get(id));
         }
-    }
-
-    private void linkLast(Task task) {
-        Node newNode = new Node(task);
-        if (tail == null) {
-            head = tail = newNode;
-        } else {
-            tail.next = newNode;
-            newNode.prev = tail;
-            tail = newNode;
-        }
-        nodeMap.put(task.getId(), newNode);
-    }
-
-    private List<Task> getTasks() {
-        List<Task> tasks = new ArrayList<>();
-        Node current = tail;
-        while (current != null) {
-            tasks.add(current.task);
-            current = current.prev;
-        }
-        return tasks;
-    }
-
-    private void removeNode(Node node) {
-        if (node == null) return;
-        if (node.prev != null) {
-            node.prev.next = node.next;
-        } else {
-            head = node.next;
-        }
-        if (node.next != null) {
-            node.next.prev = node.prev;
-        } else {
-            tail = node.prev;
-        }
-        nodeMap.remove(node.task.getId());
     }
 }
