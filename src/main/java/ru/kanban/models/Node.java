@@ -1,38 +1,38 @@
 package ru.kanban.models;
 
-public class Node {
+public class Node<T extends Task> {
 
-    private Task task;
+    private T task;
 
-    private Node prev;
+    private Node<T> prev;
 
-    private Node next;
+    private Node<T> next;
 
-    public Node(Task task) {
+    public Node(T task) {
         this.task = task;
     }
 
-    public Task getTask() {
+    public T getTask() {
         return task;
     }
 
-    public void setTask(Task task) {
+    public void setTask(T task) {
         this.task = task;
     }
 
-    public Node getPrev() {
+    public Node<T> getPrev() {
         return prev;
     }
 
-    public void setPrev(Node prev) {
+    public void setPrev(Node<T> prev) {
         this.prev = prev;
     }
 
-    public Node getNext() {
+    public Node<T> getNext() {
         return next;
     }
 
-    public void setNext(Node next) {
+    public void setNext(Node<T> next) {
         this.next = next;
     }
 }
