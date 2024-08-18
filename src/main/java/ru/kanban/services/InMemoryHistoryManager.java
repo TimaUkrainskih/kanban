@@ -30,6 +30,11 @@ public class InMemoryHistoryManager implements HistoryManager {
             nodeMap.remove(id);
         }
     }
+
+    @Override
+    public void clear() {
+        nodeMap.clear();
+    }
 }
 
 class CustomLinkedList<T extends Task> {
