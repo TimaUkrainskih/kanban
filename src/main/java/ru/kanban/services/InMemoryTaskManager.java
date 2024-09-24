@@ -83,6 +83,7 @@ public class InMemoryTaskManager implements TaskManager {
         taskList.clear();
         subtaskList.clear();
         epicList.clear();
+        history.clear();
     }
 
     @Override
@@ -118,14 +119,17 @@ public class InMemoryTaskManager implements TaskManager {
     public boolean deleteTask(Long id) {
         if (taskList.containsKey(id)) {
             taskList.remove(id);
+            history.remove(id);
             return true;
         } else if (subtaskList.containsKey(id)) {
             Subtask deletedSubtask = subtaskList.remove(id);
             epicList.get(deletedSubtask.getEpicId()).deleteSubtaskId(deletedSubtask.getId());
             updateStatus(epicList.get(deletedSubtask.getEpicId()));
+            history.remove(id);
             return true;
         } else if (epicList.containsKey(id)) {
             epicList.remove(id);
+            history.remove(id);
             return true;
         }
         return false;
