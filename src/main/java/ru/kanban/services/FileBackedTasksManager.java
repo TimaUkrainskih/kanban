@@ -15,21 +15,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    public static void main(String[] args) {
-        File file1 = new File("test.txt");
-        InMemoryTaskManager manager = new FileBackedTasksManager(new InMemoryHistoryManager(), file1);
-        Task task = new Task("title1", "description", Status.NEW);
-        Subtask subtask = new Subtask("title1", "description", Status.NEW, 2L);
-        Epic epic = new Epic("title1", "description", Status.NEW);
-        manager.createTask(task);
-        manager.createEpic(epic);
-        manager.createSubtask(subtask);
-        FileBackedTasksManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(file1, new InMemoryHistoryManager());
-        for (Task task1 : fileBackedTasksManager.listOfAllTasks()) {
-            System.out.println(task1.toString());
-        }
-    }
-
     public static FileBackedTasksManager loadFromFile(File file, HistoryManager history) {
         FileBackedTasksManager manager = new FileBackedTasksManager(history, file);
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -120,14 +105,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private Task fromString(String value) {
         Task task = null;
         String[] result = value.split(",");
-        Type type = Type.fromValue(result[1]);
+        Type type = Type.valueOf(result[1]);
         switch (type) {
             case TASK:
                 task = new Task(
                         result[2],
                         result[4],
                         Long.parseLong(result[0]),
-                        Status.fromValue(result[3])
+                        Status.valueOf(result[3])
                 );
                 break;
             case EPIC:
@@ -135,7 +120,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         result[2],
                         result[4],
                         Long.parseLong(result[0]),
-                        Status.fromValue(result[3])
+                        Status.valueOf(result[3])
                 );
                 break;
             case SUBTASK:
@@ -143,7 +128,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         result[2],
                         result[4],
                         Long.parseLong(result[0]),
-                        Status.fromValue(result[3]),
+                        Status.valueOf(result[3]),
                         Long.parseLong(result[5])
                 );
                 break;
