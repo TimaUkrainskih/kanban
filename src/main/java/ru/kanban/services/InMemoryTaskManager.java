@@ -55,8 +55,8 @@ public class InMemoryTaskManager implements TaskManager {
     public List<Task> listOfAllTasks() {
         List<Task> result = new ArrayList<>();
         result.addAll(taskList.values().stream().toList());
-        result.addAll(subtaskList.values().stream().toList());
         result.addAll(epicList.values().stream().toList());
+        result.addAll(subtaskList.values().stream().toList());
         return result;
     }
 

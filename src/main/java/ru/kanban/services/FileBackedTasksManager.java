@@ -10,6 +10,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final File file;
 
+    private static boolean isLoad = false;
+
     public FileBackedTasksManager(HistoryManager history, File file) {
         super(history);
         this.file = file;
@@ -17,17 +19,26 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static FileBackedTasksManager loadFromFile(File file, HistoryManager history) {
         FileBackedTasksManager manager = new FileBackedTasksManager(history, file);
+        isLoad = true;
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             reader.readLine();
             String line;
             while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 Task task = manager.fromString(line);
                 if (task != null) {
-                    manager.createTask(task);
+                    if (task instanceof Epic) {
+                        manager.createEpic((Epic) task);
+                    } else if (task instanceof Subtask) {
+                        manager.createSubtask((Subtask) task);
+                    } else {
+                        manager.createTask(task);
+                    }
                 }
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при загрузке из файла.", e);
+        } finally {
+            isLoad = false;
         }
         return manager;
     }
@@ -35,28 +46,34 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public Optional<Task> createTask(Task task) {
         Optional<Task> result = super.createTask(task);
-        save();
+        if (!isLoad) {
+            save();
+        }
         return result;
     }
 
     @Override
     public Optional<Subtask> createSubtask(Subtask subtask) {
         Optional<Subtask> result = super.createSubtask(subtask);
-        save();
+        if (!isLoad) {
+            save();
+        }
         return result;
     }
 
     @Override
     public Optional<Epic> createEpic(Epic epic) {
         Optional<Epic> result = super.createEpic(epic);
-        save();
+        if (!isLoad) {
+            save();
+        }
         return result;
     }
 
     @Override
     public boolean deleteTask(Long id) {
         boolean result = super.deleteTask(id);
-        if (result) {
+        if (result && !isLoad) {
             save();
         }
         return result;
@@ -65,35 +82,43 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public Optional<Epic> updateEpic(Epic updatedEpic) {
         Optional<Epic> result = super.updateEpic(updatedEpic);
-        save();
+        if (!isLoad) {
+            save();
+        }
         return result;
     }
 
     @Override
     public Optional<Subtask> updateSubtask(Subtask updateSubtask) {
         Optional<Subtask> result = super.updateSubtask(updateSubtask);
-        save();
+        if (!isLoad) {
+            save();
+        }
         return result;
     }
 
     @Override
     public Optional<Task> updateTask(Task updatedTask) {
         Optional<Task> result = super.updateTask(updatedTask);
-        save();
+        if (!isLoad) {
+            save();
+        }
         return result;
     }
 
     @Override
     public void deleteAllTasks() {
         super.deleteAllTasks();
-        save();
+        if (!isLoad) {
+            save();
+        }
     }
 
     private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write("id,type,name,status,description,epic\n");
             for (Task task : super.listOfAllTasks()) {
-                writer.write(task.toString());
+                writer.write(task.toCsv());
                 writer.newLine();
             }
             writer.newLine();

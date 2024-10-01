@@ -9,10 +9,12 @@ public class Epic extends Task {
 
     public Epic(String title, String description, long id, Status progress) {
         super(title, description, id, progress);
+        this.type = Type.EPIC;
     }
 
     public Epic(String title, String description, Status progress) {
         super(title, description, progress);
+        this.type = Type.EPIC;
     }
 
     public void deleteSubtaskId(Long id) {
@@ -42,12 +44,7 @@ public class Epic extends Task {
     }
 
     @Override
-    public String toString() {
-        return String.format("%d,%s,%s,%s,%s",
-                this.getId(),
-                Type.EPIC,
-                this.getTitle(),
-                this.getProgress(),
-                this.getDescription());
+    public String toCsv() {
+        return super.toCsv();
     }
 }
