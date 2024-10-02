@@ -10,8 +10,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final File file;
 
-    private static boolean isLoad = false;
-
     public FileBackedTasksManager(HistoryManager history, File file) {
         super(history);
         this.file = file;
@@ -25,14 +23,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             String line;
             while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 Task task = manager.fromString(line);
-                if (task != null) {
-                    if (task instanceof Epic) {
-                        manager.createEpic((Epic) task);
-                    } else if (task instanceof Subtask) {
-                        manager.createSubtask((Subtask) task);
-                    } else {
+                switch (task.getType()) {
+                    case TASK:
                         manager.createTask(task);
-                    }
+                        break;
+                    case EPIC:
+                        manager.createEpic((Epic) task);
+                        break;
+                    case SUBTASK:
+                        manager.createSubtask((Subtask) task);
+                        break;
                 }
             }
         } catch (IOException e) {

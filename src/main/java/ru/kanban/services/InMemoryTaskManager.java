@@ -14,6 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Long, Epic> epicList = new HashMap<>();
     private Long id = 1L;
     private final HistoryManager history;
+    protected static boolean isLoad = false;
 
     public InMemoryTaskManager(HistoryManager history) {
         this.history = history;
@@ -26,17 +27,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Optional<Task> createTask(Task task) {
-        task.setId(id);
-        taskList.put(id++, task);
+        statusUp(task);
+        taskList.put(task.getId(), task);
         return Optional.of(task);
     }
 
     @Override
     public Optional<Subtask> createSubtask(Subtask subtask) {
         if (epicList.containsKey(subtask.getEpicId())) {
-            subtask.setId(id);
-            epicList.get(subtask.getEpicId()).addSubtaskId(id);
-            subtaskList.put(id++, subtask);
+            statusUp(subtask);
+            epicList.get(subtask.getEpicId()).addSubtaskId(subtask.getId());
+            subtaskList.put(subtask.getId(), subtask);
             updateStatus(epicList.get(subtask.getEpicId()));
             return Optional.of(subtask);
         }
@@ -45,9 +46,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Optional<Epic> createEpic(Epic epic) {
-        epic.setId(id);
+        statusUp(epic);
         updateStatus(epic);
-        epicList.put(id++, epic);
+        epicList.put(epic.getId(), epic);
         return Optional.of(epic);
     }
 
@@ -161,6 +162,14 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setProgress(Status.DONE);
         } else {
             epic.setProgress(Status.IN_PROGRESS);
+        }
+    }
+
+    private void statusUp(Task task) {
+        if (!isLoad) {
+            task.setId(id++);
+        } else {
+            id = task.getId();
         }
     }
 }
