@@ -129,7 +129,11 @@ public class InMemoryTaskManager implements TaskManager {
             history.remove(id);
             return true;
         } else if (epicList.containsKey(id)) {
-            epicList.remove(id);
+            Epic epicToDelete = epicList.remove(id);
+            for (Long subtaskId : epicToDelete.getListSubtaskId()) {
+                subtaskList.remove(subtaskId);
+                history.remove(subtaskId);
+            }
             history.remove(id);
             return true;
         }
