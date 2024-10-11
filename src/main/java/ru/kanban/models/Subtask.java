@@ -8,11 +8,13 @@ public class Subtask extends Task {
     public Subtask(String title, String description, long id, Status progress, Long epicId) {
         super(title, description, id, progress);
         this.epicId = epicId;
+        this.type = Type.SUBTASK;
     }
 
     public Subtask(String title, String description, Status progress, Long epicId) {
         super(title, description, progress);
         this.epicId = epicId;
+        this.type = Type.SUBTASK;
     }
 
     public void updateStatus(Status status) {
@@ -42,13 +44,7 @@ public class Subtask extends Task {
     }
 
     @Override
-    public String toString() {
-        return "Subtask{" +
-                "epicId=" + epicId +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", progress=" + progress +
-                '}';
+    public String toCsv() {
+        return super.toCsv() + String.format(",%d", this.epicId);
     }
 }
