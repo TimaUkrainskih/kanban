@@ -43,6 +43,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return manager;
     }
 
+    public File getFile() {
+        return file;
+    }
+
     @Override
     public Optional<Task> createTask(Task task) {
         Optional<Task> result = super.createTask(task);
