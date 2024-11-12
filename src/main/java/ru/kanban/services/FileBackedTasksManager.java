@@ -1,5 +1,6 @@
 package ru.kanban.services;
 
+import ru.kanban.exception.InvalidDataFormatException;
 import ru.kanban.exception.ManagerSaveException;
 import ru.kanban.models.*;
 
@@ -35,6 +36,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         break;
                 }
             }
+        } catch (InvalidDataFormatException e) {
+            throw new ManagerSaveException("Ошибка при обработке данных.", e);
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при загрузке из файла.", e);
         } finally {
@@ -132,36 +135,49 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private Task fromString(String value) {
-        Task task = null;
-        String[] result = value.split(",");
-        Type type = Type.valueOf(result[1]);
-        switch (type) {
-            case TASK:
-                task = new Task(
+        try {
+            String[] result = value.split(",");
+            if (result.length < 5) {
+                throw new InvalidDataFormatException("Недостаточно данных для создания задачи: " + value);
+            }
+            Type type;
+            try {
+                type = Type.valueOf(result[1]);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidDataFormatException("Некорректный тип задачи: " + result[1], e);
+            }
+            return switch (type) {
+                case TASK -> new Task(
                         result[2],
                         result[4],
                         Long.parseLong(result[0]),
                         Status.valueOf(result[3])
                 );
-                break;
-            case EPIC:
-                task = new Epic(
+                case EPIC -> new Epic(
                         result[2],
                         result[4],
                         Long.parseLong(result[0]),
                         Status.valueOf(result[3])
                 );
-                break;
-            case SUBTASK:
-                task = new Subtask(
-                        result[2],
-                        result[4],
-                        Long.parseLong(result[0]),
-                        Status.valueOf(result[3]),
-                        Long.parseLong(result[5])
-                );
-                break;
+                case SUBTASK -> {
+                    if (result.length < 6) {
+                        throw new InvalidDataFormatException("Недостаточно данных для создания подзадачи: " + value);
+                    }
+                    yield new Subtask(
+                            result[2],
+                            result[4],
+                            Long.parseLong(result[0]),
+                            Status.valueOf(result[3]),
+                            Long.parseLong(result[5])
+                    );
+                }
+            };
+        } catch (NumberFormatException e) {
+            throw new InvalidDataFormatException("Ошибка при разборе числового значения в строке: " + value, e);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidDataFormatException("Некорректный статус или другое значение в строке: " + value, e);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new InvalidDataFormatException("Недостаточно данных в строке для создания задачи: " + value, e);
         }
-        return task;
     }
 }
