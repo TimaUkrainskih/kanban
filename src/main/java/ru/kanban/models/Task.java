@@ -7,18 +7,21 @@ public class Task {
     protected String description;
     protected long id;
     protected Status progress;
+    protected Type type;
 
     public Task(String title, String description, long id, Status progress) {
         this.title = title;
         this.description = description;
         this.id = id;
         this.progress = progress;
+        this.type = Type.TASK;
     }
 
     public Task(String title, String description, Status progress) {
         this.title = title;
         this.description = description;
         this.progress = progress;
+        this.type = Type.TASK;
     }
 
     public void updateStatus(Status status) {
@@ -57,6 +60,14 @@ public class Task {
         this.progress = progress;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -73,13 +84,12 @@ public class Task {
         return Objects.hash(title, description, id, progress);
     }
 
-    @Override
-    public String toString() {
-        return "Task{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", progress=" + progress +
-                '}';
+    public String toCsv() {
+        return String.format("%d,%s,%s,%s,%s",
+                this.getId(),
+                this.getType(),
+                this.getTitle(),
+                this.getProgress(),
+                this.getDescription());
     }
 }
